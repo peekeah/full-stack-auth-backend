@@ -1,5 +1,6 @@
 const users = require('../models/users');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 exports.signup = async (req,res) => {
     try{
@@ -28,8 +29,9 @@ exports.login = async (req, res) => {
     const isValid = await bcrypt.compare(req.body.password, existUser.password);
     if(!isValid) return res.status(500).send({ msg: "Incorrect Password"});
 
-    res.send(existUser);
-
+    //Generating token
+    const token = jwt.sign(existUser.toJSON(), process.env.JWT_SECRET_KEY);
+    res.send(token)
 }
 
 
@@ -39,5 +41,14 @@ exports.getUsers = async (req, res) => {
         res.send(data);
     } catch(err) {
         res.status(403).send(err.message);
+    }
+}
+
+exports.update = async (req, res) => {
+    try {
+        const user = await users.findOneAndUpdate({_id: req.body._id}, req.body);
+        res.send(user);
+    } catch(err) {
+        res.send(403).send(err.message);
     }
 }
