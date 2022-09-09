@@ -34,7 +34,7 @@ exports.login = async (req, res) => {
     res.send(token)
 }
 
-
+//Getting data of all user
 exports.getUsers = async (req, res) => {
     try {
         const data = await users.find({});
@@ -44,9 +44,13 @@ exports.getUsers = async (req, res) => {
     }
 }
 
-exports.update = async (req, res) => {
+//Update data of user
+exports.updateUser = async (req, res) => {
     try {
-        const user = await users.findOneAndUpdate({_id: req.body._id}, req.body);
+        let data = {...req.body};
+        delete data.user;
+    
+        const user = await users.findOneAndUpdate({_id: req.body._id}, data);
         res.send(user);
     } catch(err) {
         res.send(403).send(err.message);

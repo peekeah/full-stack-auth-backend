@@ -4,10 +4,17 @@ const authorize = require("../controllers/authorize");
 
 const router = express.Router();
 
-router.get('/', users.getUsers);
 router.post("/create", users.signup);
-router.post('/login', users.login);
+router.post("/login", users.login);
 
-router.patch('/update', authorize.authorize, users.update);
+router.patch("/update", authorize.authenticateToken, users.updateUser);
+
+//Authorized: Only admin can see
+router.get(
+    "/",
+    authorize.authenticateToken,
+    authorize.authorizeUser,
+    users.getUsers
+);
 
 module.exports = router;
